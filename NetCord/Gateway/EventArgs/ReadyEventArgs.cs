@@ -11,6 +11,8 @@ public class ReadyEventArgs : IJsonModel<JsonModels.EventArgs.JsonReadyEventArgs
 
     public string SessionId => _jsonModel.SessionId;
 
+    public string ResumeGatewayUrl => _jsonModel.ResumeGatewayUrl;
+
     public Shard? Shard => _jsonModel.Shard;
 
     public Snowflake ApplicationId => _jsonModel.Application.Id;

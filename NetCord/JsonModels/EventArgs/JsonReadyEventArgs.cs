@@ -18,6 +18,9 @@ public record JsonReadyEventArgs
     [JsonPropertyName("session_id")]
     public string SessionId { get; init; }
 
+    [JsonPropertyName("resume_gateway_url")]
+    public string ResumeGatewayUrl { get; init; }
+
     [JsonPropertyName("shard")]
     public Shard? Shard { get; init; }
 
