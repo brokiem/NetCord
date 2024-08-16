@@ -28,7 +28,7 @@ public sealed partial class RestClient : IDisposable
         
         var requestHandler = _requestHandler = configuration.RequestHandler ?? new RestRequestHandler();
 
-        requestHandler.AddDefaultHeader("User-Agent", [configuration.UserAgentHeader]);
+        requestHandler.AddDefaultHeader("User-Agent", [configuration.UserAgentHeader!]);
 
         var defaultRequestProperties = configuration.DefaultRequestProperties ?? new();
 

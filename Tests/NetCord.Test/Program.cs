@@ -19,7 +19,7 @@ internal static class Program
     private static readonly GatewayClient _client = new(new BotToken(Environment.GetEnvironmentVariable("token")!), new()
     {
         Intents = GatewayIntents.All,
-        ConnectionProperties = ConnectionPropertiesProperties.IOS,
+        //ConnectionProperties = ConnectionPropertiesProperties.IOS,
     });
 
     private static readonly CommandService<CommandContext> _commandService = new();
