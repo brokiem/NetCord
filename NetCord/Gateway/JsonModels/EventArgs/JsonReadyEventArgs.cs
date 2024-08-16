@@ -8,12 +8,15 @@ public class JsonReadyEventArgs
 {
     [JsonPropertyName("v")]
     public ApiVersion Version { get; set; }
+    
+    [JsonPropertyName("users")]
+    public JsonUser[] Users { get; set; }
 
     [JsonPropertyName("user")]
     public JsonUser User { get; set; }
 
     [JsonPropertyName("guilds")]
-    public JsonEntity[] Guilds { get; set; }
+    public JsonGuild[] Guilds { get; set; }
 
     [JsonPropertyName("session_id")]
     public string SessionId { get; set; }
@@ -26,4 +29,7 @@ public class JsonReadyEventArgs
 
     [JsonPropertyName("application")]
     public JsonApplication? Application { get; set; }
+    
+    [JsonPropertyName("private_channels")]
+    public JsonChannel[] DMChannels { get; set; }
 }

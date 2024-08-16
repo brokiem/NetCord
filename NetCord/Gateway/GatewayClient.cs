@@ -30,6 +30,8 @@ public partial class GatewayClient : WebSocketClient, IEntity
     /// Optional Intents: None
     /// </remarks>
     public event Func<ReadyEventArgs, ValueTask>? Ready;
+    
+    public event Func<ReadySupplementalEventArgs, ValueTask>? ReadySupplemental;
 
     /// <summary>
     /// Sent when an application command's permissions are updated.
@@ -840,11 +842,13 @@ public partial class GatewayClient : WebSocketClient, IEntity
     {
         var serializedPayload = new GatewayPayloadProperties<GatewayIdentifyProperties>(GatewayOpcode.Identify, new(Token.RawToken)
         {
-            ConnectionProperties = _configuration.ConnectionProperties ?? ConnectionPropertiesProperties.Default,
+            ConnectionProperties = _configuration.ConnectionProperties,
             LargeThreshold = _configuration.LargeThreshold,
             Shard = _configuration.Shard,
             Presence = presence ?? _configuration.Presence,
             Intents = _configuration.Intents,
+            ClientState = _configuration.ClientState ?? ClientStateProperties.Default,
+            Capabilities = _configuration.Capabilities
         }).Serialize(Serialization.Default.GatewayPayloadPropertiesGatewayIdentifyProperties);
         _latencyTimer.Start();
         return SendPayloadAsync(serializedPayload, cancellationToken);
@@ -985,7 +989,16 @@ public partial class GatewayClient : WebSocketClient, IEntity
                     {
                         var cache = Cache;
                         cache = cache.CacheCurrentUser(data.User);
-                        cache = cache.SyncGuilds(data.GuildIds);
+                        cache = cache.SyncGuilds(args.Guilds.Values.Select(g => g.Id).ToArray());
+
+                        foreach (var guild in args.Guilds.Values)
+                        {
+                            cache = Cache.CacheGuild(guild);
+                            cache = guild.Roles.Values
+                                .Select(role => cache.CacheRole(guild.Id, role))
+                                .Aggregate((currentCache, newCache) => currentCache);
+                        }
+
                         Cache = cache;
 
                         SessionId = args.SessionId;
@@ -994,6 +1007,23 @@ public partial class GatewayClient : WebSocketClient, IEntity
                         _readyCompletionSource.TrySetResult();
                     }).ConfigureAwait(false);
                     await updateLatencyTask.ConfigureAwait(false);
+                }
+                break;
+            case "READY_SUPPLEMENTAL":
+                {
+                    ReadySupplementalEventArgs args = new(data.ToObject(Serialization.Default.JsonReadySupplementalEventArgs), Rest);
+                    await InvokeEventAsync(ReadySupplemental, args, data =>
+                    {
+                        var cache = Cache;
+                        foreach (var guildUsers in args.MergedMembers)
+                        foreach (var guildUser in guildUsers)
+                            cache = cache.CacheGuildUser(guildUser);
+                        
+                        foreach (ReadySupplementalEventArgs.ReadySupplementalGuild guild in args.Guilds)
+                        foreach (var voiceState in guild.VoiceStates)
+                            cache = voiceState.ChannelId.HasValue ? cache.CacheVoiceState(guild.Id, voiceState) : cache.RemoveVoiceState(guild.Id, voiceState.UserId);
+                        Cache = cache;
+                    }).ConfigureAwait(false);
                 }
                 break;
             case "RESUMED":
@@ -1192,13 +1222,13 @@ public partial class GatewayClient : WebSocketClient, IEntity
             case "GUILD_ROLE_CREATE":
                 {
                     var json = data.ToObject(Serialization.Default.JsonRoleEventArgs);
-                    await InvokeEventAsync(RoleCreate, new(json.Role, json.GuildId, Rest), role => Cache = Cache.CacheRole(role)).ConfigureAwait(false);
+                    await InvokeEventAsync(RoleCreate, new(json.Role, json.GuildId, Rest), role => Cache = Cache.CacheRole(role.GuildId, role)).ConfigureAwait(false);
                 }
                 break;
             case "GUILD_ROLE_UPDATE":
                 {
                     var json = data.ToObject(Serialization.Default.JsonRoleEventArgs);
-                    await InvokeEventAsync(RoleUpdate, new(json.Role, json.GuildId, Rest), role => Cache = Cache.CacheRole(role)).ConfigureAwait(false);
+                    await InvokeEventAsync(RoleUpdate, new(json.Role, json.GuildId, Rest), role => Cache = Cache.CacheRole(role.GuildId, role)).ConfigureAwait(false);
                 }
                 break;
             case "GUILD_ROLE_DELETE":
@@ -1369,9 +1399,9 @@ public partial class GatewayClient : WebSocketClient, IEntity
                     await InvokeEventAsync(VoiceStateUpdate, new(json, json.GuildId.GetValueOrDefault(), Rest), voiceState =>
                     {
                         if (voiceState.ChannelId.HasValue)
-                            Cache = Cache.CacheVoiceState(voiceState);
+                            Cache = Cache.CacheVoiceState(voiceState.GuildId!.Value, voiceState);
                         else
-                            Cache = Cache.RemoveVoiceState(voiceState.GuildId, voiceState.UserId);
+                            Cache = Cache.RemoveVoiceState(voiceState.GuildId!.Value, voiceState.UserId);
                     }).ConfigureAwait(false);
                 }
                 break;

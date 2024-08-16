@@ -2,6 +2,29 @@
 
 namespace NetCord;
 
+public class UserToken : IEntityToken
+{
+    public UserToken(string token)
+    {
+        if (string.IsNullOrEmpty(token))
+            throw new ArgumentException($"'{nameof(token)}' cannot be null or empty.", nameof(token));
+
+        Id = IEntityToken.TryGetTokenId(token, out var id)
+            ? id
+            : throw new ArgumentException($"'{nameof(token)}' is not a valid user token.", nameof(token));
+
+        RawToken = token;
+    }
+
+    public string RawToken { get; }
+
+    public string HttpHeaderValue => $"{RawToken}";
+
+    public ulong Id { get; }
+
+    public DateTimeOffset CreatedAt => Snowflake.CreatedAt(Id);
+}
+
 public class BotToken : IEntityToken
 {
     public BotToken(string token)

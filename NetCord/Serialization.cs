@@ -66,6 +66,8 @@ namespace NetCord;
 [JsonSerializable(typeof(JsonAutoModerationRule))]
 [JsonSerializable(typeof(JsonApplicationCommandGuildPermission))]
 [JsonSerializable(typeof(JsonReadyEventArgs))]
+[JsonSerializable(typeof(JsonReadySupplementalEventArgs))]
+[JsonSerializable(typeof(JsonReadySupplementalEventArgs.JsonReadySupplementalGuild))]
 [JsonSerializable(typeof(GatewayPayloadProperties<GuildUsersRequestProperties>))]
 [JsonSerializable(typeof(GatewayPayloadProperties<PresenceProperties>))]
 [JsonSerializable(typeof(GatewayPayloadProperties<VoiceStateProperties>))]

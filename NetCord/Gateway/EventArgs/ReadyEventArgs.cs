@@ -1,4 +1,6 @@
-﻿using NetCord.Rest;
+﻿using System.Collections.Immutable;
+
+using NetCord.Rest;
 
 namespace NetCord.Gateway;
 
@@ -8,10 +10,12 @@ public class ReadyEventArgs : IJsonModel<JsonModels.EventArgs.JsonReadyEventArgs
     private readonly JsonModels.EventArgs.JsonReadyEventArgs _jsonModel;
 
     public ApiVersion Version => _jsonModel.Version;
+    
+    public User[] Users { get; }
 
     public CurrentUser User { get; }
 
-    public IReadOnlyList<ulong> GuildIds { get; }
+    public ImmutableDictionary<ulong, Guild> Guilds { get; }
 
     public string SessionId => _jsonModel.SessionId;
 
@@ -26,7 +30,8 @@ public class ReadyEventArgs : IJsonModel<JsonModels.EventArgs.JsonReadyEventArgs
     public ReadyEventArgs(JsonModels.EventArgs.JsonReadyEventArgs jsonModel, RestClient client)
     {
         _jsonModel = jsonModel;
+        Users = _jsonModel.Users.Select(u => new User(u, client)).ToArray();
         User = new(jsonModel.User, client);
-        GuildIds = _jsonModel.Guilds.Select(g => g.Id).ToArray();
+        Guilds = _jsonModel.Guilds.Select(g => new Guild(g, jsonModel.User.Id, client)).ToImmutableDictionary(g => g.Id);
     }
 }

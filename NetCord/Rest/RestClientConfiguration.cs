@@ -5,8 +5,9 @@ namespace NetCord.Rest;
 public class RestClientConfiguration
 {
     public string? Hostname { get; init; }
-    public ApiVersion Version { get; init; } = ApiVersion.V10;
+    public ApiVersion Version { get; init; } = ApiVersion.V9;
     public IRestRequestHandler? RequestHandler { get; init; }
     public RestRequestProperties? DefaultRequestProperties { get; init; }
     public IRateLimitManager? RateLimitManager { get; init; }
+    public string? UserAgentHeader { get; init; }
 }

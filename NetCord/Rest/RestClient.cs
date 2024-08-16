@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
+using NetCord.Gateway;
 using NetCord.Rest.RateLimits;
 
 namespace NetCord.Rest;
@@ -24,10 +25,10 @@ public sealed partial class RestClient : IDisposable
         configuration ??= new();
 
         _baseUrl = $"https://{configuration.Hostname ?? Discord.RestHostname}/api/v{(int)configuration.Version}";
-
+        
         var requestHandler = _requestHandler = configuration.RequestHandler ?? new RestRequestHandler();
 
-        requestHandler.AddDefaultHeader("User-Agent", [UserAgentHeader]);
+        requestHandler.AddDefaultHeader("User-Agent", [configuration.UserAgentHeader]);
 
         var defaultRequestProperties = configuration.DefaultRequestProperties ?? new();
 

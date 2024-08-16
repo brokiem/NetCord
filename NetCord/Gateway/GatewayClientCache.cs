@@ -102,9 +102,8 @@ public sealed record GatewayClientCache : IGatewayClientCache
         return this;
     }
 
-    public IGatewayClientCache CacheRole(Role role)
+    public IGatewayClientCache CacheRole(ulong guildId, Role role)
     {
-        var guildId = role.GuildId;
         var guilds = _guilds;
         if (guilds.TryGetValue(guildId, out var guild))
         {
@@ -213,9 +212,8 @@ public sealed record GatewayClientCache : IGatewayClientCache
         };
     }
 
-    public IGatewayClientCache CacheVoiceState(VoiceState voiceState)
+    public IGatewayClientCache CacheVoiceState(ulong guildId, VoiceState voiceState)
     {
-        var guildId = voiceState.GuildId;
         var guilds = _guilds;
         if (guilds.TryGetValue(guildId, out var guild))
         {

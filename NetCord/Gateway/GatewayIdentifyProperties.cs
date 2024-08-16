@@ -7,6 +7,7 @@ internal class GatewayIdentifyProperties(string token)
     [JsonPropertyName("token")]
     public string Token { get; set; } = token;
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("properties")]
     public ConnectionPropertiesProperties? ConnectionProperties { get; set; }
 
@@ -21,10 +22,16 @@ internal class GatewayIdentifyProperties(string token)
     [JsonPropertyName("shard")]
     public Shard? Shard { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("presence")]
     public PresenceProperties? Presence { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("intents")]
-    public GatewayIntents Intents { get; set; }
+    public GatewayIntents? Intents { get; set; }
+    
+    [JsonPropertyName("client_state")]
+    public ClientStateProperties? ClientState { get; set; }
+
+    [JsonPropertyName("capabilities")]
+    public int? Capabilities { get; set; }
 }

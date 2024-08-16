@@ -8,6 +8,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsAotCompatible>true</IsAotCompatible>
 
+    <PackageId>brokiem.NetCord.Services</PackageId>
     <RepositoryUrl>https://github.com/NetCordDev/NetCord</RepositoryUrl>
     <PackageProjectUrl>https://netcord.dev</PackageProjectUrl>
     <PackageTags>bot;discord;discord-api</PackageTags>

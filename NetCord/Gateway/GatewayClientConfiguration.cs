@@ -10,10 +10,10 @@ public class GatewayClientConfiguration : IWebSocketClientConfiguration
     public IWebSocket? WebSocket { get; init; }
     public IReconnectStrategy? ReconnectStrategy { get; init; }
     public ILatencyTimer? LatencyTimer { get; init; }
-    public ApiVersion Version { get; init; } = ApiVersion.V10;
+    public ApiVersion Version { get; init; } = ApiVersion.V9;
     public IGatewayClientCache? Cache { get; init; }
     public IGatewayCompression? Compression { get; init; }
-    public GatewayIntents Intents { get; init; } = GatewayIntents.AllNonPrivileged;
+    public GatewayIntents? Intents { get; init; }
     public string? Hostname { get; init; }
     public ConnectionPropertiesProperties? ConnectionProperties { get; init; }
     public int? LargeThreshold { get; init; }
@@ -21,4 +21,6 @@ public class GatewayClientConfiguration : IWebSocketClientConfiguration
     public Shard? Shard { get; init; }
     public bool CacheDMChannels { get; init; } = true;
     public Rest.RestClientConfiguration? RestClientConfiguration { get; init; }
+    public ClientStateProperties? ClientState { get; init; }
+    public int Capabilities { get; init; } = 0;
 }
