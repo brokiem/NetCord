@@ -2,12 +2,17 @@ using System.Text.Json.Serialization;
 
 namespace NetCord.Gateway;
 
+public class GuildVersions
+{
+    // No properties, will serialize as an empty object
+}
+
 public partial class ClientStateProperties
 {
     public static ClientStateProperties Default => new()
     {
         ApiCodeVersion = 0,
-        GuildVersions = new { },
+        GuildVersions = new GuildVersions(),
         HighestLastMessageId = "0",
         PrivateChannelsVersion = "0",
         ReadStateVersion = 0,
@@ -21,7 +26,7 @@ public partial class ClientStateProperties
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("guild_versions")]
-    public object? GuildVersions { get; set; }
+    public GuildVersions? GuildVersions { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("highest_last_message_id")]
