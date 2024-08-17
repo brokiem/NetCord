@@ -987,19 +987,21 @@ public partial class GatewayClient : WebSocketClient, IEntity
                     ReadyEventArgs args = new(data.ToObject(Serialization.Default.JsonReadyEventArgs), Rest);
                     await InvokeEventAsync(Ready, args, data =>
                     {
-                        var cache = Cache;
-                        cache = cache.CacheCurrentUser(data.User);
-                        cache = cache.SyncGuilds(args.Guilds.Values.Select(g => g.Id).ToArray());
-
-                        foreach (var guild in args.Guilds.Values)
+                        Cache.CacheCurrentUser(data.User);
+                        Cache.SyncGuilds(data.Guilds.Values.Select(g => g.Id).ToArray());
+                        
+                        foreach (var guild in data.Guilds.Values)
                         {
-                            cache = Cache.CacheGuild(guild);
-                            cache = guild.Roles.Values
-                                .Select(role => cache.CacheRole(guild.Id, role))
-                                .Aggregate((currentCache, newCache) => currentCache);
-                        }
+                            Cache.CacheGuild(guild);
+                            Cache.CacheGuildStickers(guild.Id, guild.Stickers);
+                            Cache.CacheGuildEmojis(guild.Id, guild.Emojis);
 
-                        Cache = cache;
+                            foreach (var channel in guild.Channels.Values)
+                                Cache.CacheGuildChannel(channel);
+
+                            foreach (var role in guild.Roles.Values)
+                                Cache.CacheRole(guild.Id, role);
+                        }
 
                         SessionId = args.SessionId;
                         ApplicationFlags = args.ApplicationFlags;
