@@ -17,7 +17,7 @@ public partial class ClientStateProperties
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("api_code_version")]
-    public int ApiCodeVersion { get; set; }
+    public int? ApiCodeVersion { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("guild_versions")]
@@ -33,13 +33,13 @@ public partial class ClientStateProperties
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("read_state_version")]
-    public int ReadStateVersion { get; set; }
+    public int? ReadStateVersion { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("user_guild_settings_version")]
-    public int UserGuildSettingsVersion { get; set; }
+    public int? UserGuildSettingsVersion { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("user_settings_version")]
-    public int UserSettingsVersion { get; set; }
+    public int? UserSettingsVersion { get; set; }
 }
