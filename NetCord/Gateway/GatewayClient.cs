@@ -1015,10 +1015,6 @@ public partial class GatewayClient : WebSocketClient, IEntity
                     await InvokeEventAsync(ReadySupplemental, args, data =>
                     {
                         var cache = Cache;
-                        foreach (var guildUsers in args.MergedMembers)
-                        foreach (var guildUser in guildUsers)
-                            cache = cache.CacheGuildUser(guildUser);
-                        
                         foreach (ReadySupplementalEventArgs.ReadySupplementalGuild guild in args.Guilds)
                         foreach (var voiceState in guild.VoiceStates)
                             cache = voiceState.ChannelId.HasValue ? cache.CacheVoiceState(guild.Id, voiceState) : cache.RemoveVoiceState(guild.Id, voiceState.UserId);
