@@ -15,21 +15,21 @@ public class GuildPreview : ClientEntity, IJsonModel<NetCord.JsonModels.JsonGuil
 
     public override ulong Id => _jsonModel.Id;
 
-    public string Name => _jsonModel.Name;
+    public string Name => _jsonModel.Properties.Name;
 
-    public string? IconHash => _jsonModel.IconHash;
+    public string? IconHash => _jsonModel.Properties.IconHash;
 
-    public string? SplashHash => _jsonModel.SplashHash;
+    public string? SplashHash => _jsonModel.Properties.SplashHash;
 
-    public string? DiscoverySplashHash => _jsonModel.DiscoverySplashHash;
+    public string? DiscoverySplashHash => _jsonModel.Properties.DiscoverySplashHash;
 
     public ImmutableDictionary<ulong, GuildEmoji> Emojis { get; }
 
-    public IReadOnlyList<string> Features => _jsonModel.Features;
+    public IReadOnlyList<string> Features => _jsonModel.Properties.Features;
 
     public int ApproximateUserCount => _jsonModel.ApproximateUserCount.GetValueOrDefault();
 
     public int ApproximatePresenceCount => _jsonModel.ApproximatePresenceCount.GetValueOrDefault();
 
-    public string? Description => _jsonModel.Description;
+    public string? Description => _jsonModel.Properties.Description;
 }

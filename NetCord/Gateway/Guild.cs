@@ -21,7 +21,7 @@ public class Guild : RestGuild
         StageInstances = jsonModel.StageInstances.ToImmutableDictionaryOrEmpty(i => new StageInstance(i, client));
         Presences = jsonModel.Presences.ToImmutableDictionaryOrEmpty(p => new Presence(p, guildId, client));
         ScheduledEvents = jsonModel.ScheduledEvents.ToImmutableDictionaryOrEmpty(e => new GuildScheduledEvent(e, client));
-        IsOwner = jsonModel.OwnerId == clientId;
+        IsOwner = jsonModel.Properties.OwnerId == clientId;
     }
 
     public Guild(JsonGuild jsonModel, ulong clientId, Guild oldGuild) : base(Copy(jsonModel, oldGuild), oldGuild._client)
@@ -33,7 +33,7 @@ public class Guild : RestGuild
         StageInstances = oldGuild.StageInstances;
         Presences = oldGuild.Presences;
         ScheduledEvents = oldGuild.ScheduledEvents;
-        IsOwner = jsonModel.OwnerId == clientId;
+        IsOwner = jsonModel.Properties.OwnerId == clientId;
     }
 
     private static JsonGuild Copy(JsonGuild jsonModel, Guild oldGuild)

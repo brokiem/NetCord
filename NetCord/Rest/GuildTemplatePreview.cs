@@ -6,17 +6,17 @@ public class GuildTemplatePreview(JsonGuild jsonModel, RestClient client) : IJso
 {
     JsonGuild IJsonModel<JsonGuild>.JsonModel => jsonModel;
 
-    public string Name => jsonModel.Name;
+    public string Name => jsonModel.Properties.Name;
     public string? IconHash => jsonModel.IconHashTemplate;
-    public string? Description => jsonModel.Description;
-    public VerificationLevel VerificationLevel => jsonModel.VerificationLevel;
-    public DefaultMessageNotificationLevel DefaultMessageNotificationLevel => jsonModel.DefaultMessageNotificationLevel;
-    public ContentFilter ContentFilter => jsonModel.ContentFilter;
-    public string PreferredLocale => jsonModel.PreferredLocale;
-    public ulong? AfkChannelId => jsonModel.AfkChannelId;
-    public int AfkTimeout => jsonModel.AfkTimeout;
-    public ulong? SystemChannelId => jsonModel.SystemChannelId;
-    public SystemChannelFlags SystemChannelFlags => jsonModel.SystemChannelFlags;
+    public string? Description => jsonModel.Properties.Description;
+    public VerificationLevel VerificationLevel => jsonModel.Properties.VerificationLevel;
+    public DefaultMessageNotificationLevel DefaultMessageNotificationLevel => jsonModel.Properties.DefaultMessageNotificationLevel;
+    public ContentFilter ContentFilter => jsonModel.Properties.ContentFilter;
+    public string PreferredLocale => jsonModel.Properties.PreferredLocale;
+    public ulong? AfkChannelId => jsonModel.Properties.AfkChannelId;
+    public int AfkTimeout => jsonModel.Properties.AfkTimeout;
+    public ulong? SystemChannelId => jsonModel.Properties.SystemChannelId;
+    public SystemChannelFlags SystemChannelFlags => jsonModel.Properties.SystemChannelFlags;
     public IReadOnlyDictionary<ulong, Role> Roles { get; } = jsonModel.Roles.ToDictionaryOrEmpty(r => new Role(r, 0, client));
     public IReadOnlyDictionary<ulong, IGuildChannel> Channels { get; } = jsonModel.Channels.ToDictionaryOrEmpty(c => IGuildChannel.CreateFromJson(c, 0, client));
 }

@@ -69,10 +69,12 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// </summary>
     public override ulong Id => _jsonModel.Id;
 
+    public GuildPropertiesV2 Properties => new(_jsonModel.Properties);
+
     /// <summary>
     /// The name of the <see cref="RestGuild"/>. Must be between 2 and 100 characters. Leading and trailing whitespace are trimmed.
     /// </summary>
-    public string Name => _jsonModel.Name;
+    public string Name => Properties.Name;
 
     /// <summary>
     /// Whether the <see cref="RestGuild"/> has an icon set.
@@ -82,7 +84,7 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The <see cref="RestGuild"/>'s icon hash.
     /// </summary>
-    public string? IconHash => _jsonModel.IconHash;
+    public string? IconHash => Properties.IconHash;
 
     /// <summary>
     /// Gets the <see cref="ImageUrl"/> of the <see cref="RestGuild"/>'s icon.
@@ -99,7 +101,7 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The <see cref="RestGuild"/>'s splash hash.
     /// </summary>
-    public string? SplashHash => _jsonModel.SplashHash;
+    public string? SplashHash => Properties.SplashHash;
 
     /// <summary>
     /// Gets the <see cref="ImageUrl"/> of the <see cref="RestGuild"/>'s splash.
@@ -116,7 +118,7 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The <see cref="RestGuild"/>'s discovery splash hash.
     /// </summary>
-    public string? DiscoverySplashHash => _jsonModel.DiscoverySplashHash;
+    public string? DiscoverySplashHash => Properties.DiscoverySplashHash;
 
     /// <summary>
     /// Gets the <see cref="ImageUrl"/> of the <see cref="RestGuild"/>'s discovery splash.
@@ -133,7 +135,7 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The ID of the <see cref="RestGuild"/>'s owner.
     /// </summary>
-    public ulong OwnerId => _jsonModel.OwnerId;
+    public ulong OwnerId => Properties.OwnerId;
 
     /// <summary>
     /// Total permissions for the user in the <see cref="RestGuild"/> (excludes overwrites and implicit permissions).
@@ -146,12 +148,12 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// ID of the <see cref="RestGuild"/>'s AFK channel.
     /// </summary>
-    public ulong? AfkChannelId => _jsonModel.AfkChannelId;
+    public ulong? AfkChannelId => Properties.AfkChannelId;
 
     /// <summary>
     /// How long in seconds to wait before moving users to the AFK channel.
     /// </summary>
-    public int AfkTimeout => _jsonModel.AfkTimeout;
+    public int AfkTimeout => Properties.AfkTimeout;
 
     /// <summary>
     /// <see langword="true"/> if the <see cref="GuildWidget"/> is enabled.
@@ -166,17 +168,17 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The <see cref="NetCord.VerificationLevel"/> required for the <see cref="RestGuild"/>.
     /// </summary>
-    public VerificationLevel VerificationLevel => _jsonModel.VerificationLevel;
+    public VerificationLevel VerificationLevel => Properties.VerificationLevel;
 
     /// <summary>
     /// The <see cref="RestGuild"/>'s <see cref="NetCord.DefaultMessageNotificationLevel"/>.
     /// </summary>
-    public DefaultMessageNotificationLevel DefaultMessageNotificationLevel => _jsonModel.DefaultMessageNotificationLevel;
+    public DefaultMessageNotificationLevel DefaultMessageNotificationLevel => Properties.DefaultMessageNotificationLevel;
 
     /// <summary>
     /// The <see cref="RestGuild"/>'s <see cref="NetCord.ContentFilter"/>.
     /// </summary>
-    public ContentFilter ContentFilter => _jsonModel.ContentFilter;
+    public ContentFilter ContentFilter => Properties.ContentFilter;
 
     /// <summary>
     /// A dictionary of <see cref="Role"/> objects indexed by their IDs, representing the <see cref="RestGuild"/>'s roles.
@@ -191,32 +193,32 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// A list of <see cref="RestGuild"/> feature strings, representing what features are currently enabled.
     /// </summary>
-    public IReadOnlyList<string> Features => _jsonModel.Features;
+    public IReadOnlyList<string> Features => Properties.Features;
 
     /// <summary>
     /// The <see cref="RestGuild"/>'s required Multi-Factor Authentication level.
     /// </summary>
-    public MfaLevel MfaLevel => _jsonModel.MfaLevel;
+    public MfaLevel MfaLevel => Properties.MfaLevel;
 
     /// <summary>
     /// The <see cref="RestGuild"/> creator's application ID, if it was created by a bot.
     /// </summary>
-    public ulong? ApplicationId => _jsonModel.ApplicationId;
+    public ulong? ApplicationId => Properties.ApplicationId;
 
     /// <summary>
     /// The ID of the channel where <see cref="RestGuild"/> notices such as welcome messages and boost events are posted.
     /// </summary>
-    public ulong? SystemChannelId => _jsonModel.SystemChannelId;
+    public ulong? SystemChannelId => Properties.SystemChannelId;
 
     /// <summary>
     /// Represents the <see cref="RestGuild"/>'s current system channels settings.
     /// </summary>
-    public SystemChannelFlags SystemChannelFlags => _jsonModel.SystemChannelFlags;
+    public SystemChannelFlags SystemChannelFlags => Properties.SystemChannelFlags;
 
     /// <summary>
     /// The ID of the channel where community guilds can display their rules and/or guidelines.
     /// </summary>
-    public ulong? RulesChannelId => _jsonModel.RulesChannelId;
+    public ulong? RulesChannelId => Properties.RulesChannelId;
 
     /// <summary>
     /// The maximum number of <see cref="Presence"/>s for the <see cref="RestGuild"/>. Always <see langword="null"/> with the exception of the largest guilds.
@@ -226,17 +228,17 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The maximum number of <see cref="GuildUser"/>s for the <see cref="RestGuild"/>.
     /// </summary>
-    public int? MaxUsers => _jsonModel.MaxUsers;
+    public int? MaxUsers => Properties.MaxUsers;
 
     /// <summary>
     /// The <see cref="RestGuild"/>'s vanity invite URL code.
     /// </summary>
-    public string? VanityUrlCode => _jsonModel.VanityUrlCode;
+    public string? VanityUrlCode => Properties.VanityUrlCode;
 
     /// <summary>
     /// The <see cref="RestGuild"/>'s description, shown in the 'Discovery' tab.
     /// </summary>
-    public string? Description => _jsonModel.Description;
+    public string? Description => Properties.Description;
 
     /// <summary>
     /// Whether the <see cref="RestGuild"/> has a set banner.
@@ -246,7 +248,7 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The <see cref="RestGuild"/>'s banner hash.
     /// </summary>
-    public string? BannerHash => _jsonModel.BannerHash;
+    public string? BannerHash => Properties.BannerHash;
 
     /// <summary>
     /// Gets the <see cref="ImageUrl"/> of the <see cref="RestGuild"/>'s banner.
@@ -258,7 +260,7 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The <see cref="RestGuild"/>'s current server boost level.
     /// </summary>
-    public int PremiumTier => _jsonModel.PremiumTier;
+    public int PremiumTier => Properties.PremiumTier;
 
     /// <summary>
     /// The number of boosts the <see cref="RestGuild"/> currently has.
@@ -268,22 +270,22 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The preferred locale of a community <see cref="RestGuild"/>, used for the 'Discovery' tab and in notices from Discord, also sent in interactions. Defaults to <c>en-US</c>.
     /// </summary>
-    public string PreferredLocale => _jsonModel.PreferredLocale;
+    public string PreferredLocale => Properties.PreferredLocale;
 
     /// <summary>
     /// The ID of the channel where admins and moderators of community guilds receive notices from Discord.
     /// </summary>
-    public ulong? PublicUpdatesChannelId => _jsonModel.PublicUpdatesChannelId;
+    public ulong? PublicUpdatesChannelId => Properties.PublicUpdatesChannelId;
 
     /// <summary>
     /// The maximum amount of users in a video channel.
     /// </summary>
-    public int? MaxVideoChannelUsers => _jsonModel.MaxVideoChannelUsers;
+    public int? MaxVideoChannelUsers => Properties.MaxVideoChannelUsers;
 
     /// <summary>
     /// The maximum amount of users in a stage video channel.
     /// </summary>
-    public int? MaxStageVideoChannelUsers => _jsonModel.MaxStageVideoChannelUsers;
+    public int? MaxStageVideoChannelUsers => Properties.MaxStageVideoChannelUsers;
 
     /// <summary>
     /// The approximate number of <see cref="GuildUser"/>s in the <see cref="RestGuild"/>.
@@ -309,7 +311,7 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The <see cref="RestGuild"/>'s set NSFW level.
     /// </summary>
-    public NsfwLevel NsfwLevel => _jsonModel.NsfwLevel;
+    public NsfwLevel NsfwLevel => Properties.NsfwLevel;
 
     /// <summary>
     /// A dictionary of <see cref="GuildSticker"/> objects indexed by their IDs, representing the <see cref="RestGuild"/>'s custom stickers.
@@ -319,12 +321,12 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// Whether the <see cref="RestGuild"/> has the boost progress bar enabled.
     /// </summary>
-    public bool PremiumProgressBarEnabled => _jsonModel.PremiumProgressBarEnabled;
+    public bool PremiumProgressBarEnabled => Properties.PremiumProgressBarEnabled;
 
     /// <summary>
     /// The ID of the channel where admins and moderators of community guilds receive safety alerts from Discord.
     /// </summary>
-    public ulong? SafetyAlertsChannelId => _jsonModel.SafetyAlertsChannelId;
+    public ulong? SafetyAlertsChannelId => Properties.SafetyAlertsChannelId;
 
     /// <summary>
     /// The guild's base role, applied to all users.
