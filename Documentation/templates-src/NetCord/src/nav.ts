@@ -189,13 +189,16 @@ function inThisArticle(): TemplateResult {
 function findActiveItem(items: (NavItem | NavItemContainer)[]): NavItem {
   const url = new URL(window.location.href);
   let activeItem: NavItem;
-  let maxPrefix = 1;
+  let maxPrefix = 0;
   for (const item of items.map((i) => ("items" in i ? i.items : i)).flat()) {
     if (isExternalHref(item.href)) {
       continue;
     }
     const prefix = commonUrlPrefix(url, item.href);
-    if (prefix > maxPrefix) {
+    if (prefix == maxPrefix) {
+      activeItem = undefined;
+    }
+    else if (prefix > maxPrefix) {
       maxPrefix = prefix;
       activeItem = item;
     }
@@ -206,7 +209,7 @@ function findActiveItem(items: (NavItem | NavItemContainer)[]): NavItem {
 function commonUrlPrefix(url: URL, base: URL): number {
   const urlSegments = url.pathname.split("/");
   const baseSegments = base.pathname.split("/");
-  let i = 1;
+  let i = 0;
   while (
     i < urlSegments.length &&
     i < baseSegments.length &&

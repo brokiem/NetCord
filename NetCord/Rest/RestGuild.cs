@@ -106,9 +106,9 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// Gets the <see cref="ImageUrl"/> of the <see cref="RestGuild"/>'s splash.
     /// </summary>
-    /// <param name="format">The format of the returned <see cref="ImageUrl"/>. Defaults to <see cref="ImageFormat.Png"/>.</param>
+    /// <param name="format">The format of the returned <see cref="ImageUrl"/>.</param>
     /// <returns>An <see cref="ImageUrl"/> pointing to the guild's splash. If the guild does not have one set, returns <see langword="null"/>.</returns>
-    public ImageUrl? GetSplashUrl(ImageFormat format = ImageFormat.Png) => SplashHash is string hash ? ImageUrl.GuildSplash(Id, hash, format) : null;
+    public ImageUrl? GetSplashUrl(ImageFormat format) => SplashHash is string hash ? ImageUrl.GuildSplash(Id, hash, format) : null;
 
     /// <summary>
     /// Whether the <see cref="RestGuild"/> has a set discovery splash.
@@ -123,9 +123,9 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// Gets the <see cref="ImageUrl"/> of the <see cref="RestGuild"/>'s discovery splash.
     /// </summary>
-    /// <param name="format">The format of the returned <see cref="ImageUrl"/>. Defaults to <see cref="ImageFormat.Png"/>.</param>
+    /// <param name="format">The format of the returned <see cref="ImageUrl"/>.</param>
     /// <returns>An <see cref="ImageUrl"/> pointing to the guild's discovery splash. If the guild does not have one set, returns <see langword="null"/>.</returns>
-    public ImageUrl? GetDiscoverySplashUrl(ImageFormat format = ImageFormat.Png) => DiscoverySplashHash is string hash ? ImageUrl.GuildDiscoverySplash(Id, hash, format) : null;
+    public ImageUrl? GetDiscoverySplashUrl(ImageFormat format) => DiscoverySplashHash is string hash ? ImageUrl.GuildDiscoverySplash(Id, hash, format) : null;
 
     /// <summary>
     /// <see langword="true"/> if the user is the owner of the <see cref="RestGuild"/>.
@@ -291,7 +291,7 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// The approximate number of <see cref="GuildUser"/>s in the <see cref="RestGuild"/>.
     /// </summary>
     /// <remarks>
-    /// Only available in objects returned from <see cref="RestClient.GetGuildAsync(ulong, bool, RestRequestProperties?)"/> and <see cref="RestClient.GetCurrentUserGuildsAsync(GuildsPaginationProperties?, RestRequestProperties?)"/>, where <c>withCounts</c> is true.
+    /// Only available in objects returned from <see cref="RestClient.GetGuildAsync(ulong, bool, RestRequestProperties?, CancellationToken)"/> and <see cref="RestClient.GetCurrentUserGuildsAsync(GuildsPaginationProperties?, RestRequestProperties?)"/>, where <c>withCounts</c> is true.
     /// </remarks>
     public int? ApproximateUserCount => _jsonModel.ApproximateUserCount;
 
@@ -299,7 +299,7 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// Approximate number of non-offline <see cref="GuildUser"/>s in the <see cref="RestGuild"/>.
     /// </summary>
     /// <remarks>
-    /// Only available in objects returned from <see cref="RestClient.GetGuildAsync(ulong, bool, RestRequestProperties?)"/> and <see cref="RestClient.GetCurrentUserGuildsAsync(GuildsPaginationProperties?, RestRequestProperties?)"/>, where <c>withCounts</c> is true.
+    /// Only available in objects returned from <see cref="RestClient.GetGuildAsync(ulong, bool, RestRequestProperties?, CancellationToken)"/> and <see cref="RestClient.GetCurrentUserGuildsAsync(GuildsPaginationProperties?, RestRequestProperties?)"/>, where <c>withCounts</c> is true.
     /// </remarks>
     public int? ApproximatePresenceCount => _jsonModel.ApproximatePresenceCount;
 
@@ -331,5 +331,8 @@ public partial class RestGuild : ClientEntity, IJsonModel<NetCord.JsonModels.Jso
     /// <summary>
     /// The guild's base role, applied to all users.
     /// </summary>
-    public Role EveryoneRole => Roles[Id];
+    /// <returns>The guild's base role, applied to all users or <see langword="null"/> if the guild is partial.</returns>
+    public Role? EveryoneRole => Roles.GetValueOrDefault(Id);
+
+    public ImageUrl GetWidgetUrl(GuildWidgetStyle? style = null, string? hostname = null, ApiVersion? version = null) => ImageUrl.GuildWidget(Id, style, hostname, version);
 }
