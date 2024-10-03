@@ -9,34 +9,127 @@ namespace NetCord.Hosting.Services.ApplicationCommands;
 
 public static class ApplicationCommandServiceServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplicationCommands<TInteraction, TContext>(this IServiceCollection services)
+    // Configure
+
+    public static IServiceCollection ConfigureApplicationCommands(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions> configureOptions)
+    {
+        return services.ConfigureApplicationCommands((options, _) => configureOptions(options));
+    }
+
+    public static IServiceCollection ConfigureApplicationCommands(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions, IServiceProvider> configureOptions)
+    {
+        services
+            .AddOptions<ApplicationCommandServiceOptions>()
+            .PostConfigure(configureOptions);
+
+        return services;
+    }
+
+    public static IServiceCollection ConfigureApplicationCommands<TInteraction,
+                                                                  TContext>(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions<TInteraction, TContext>> configureOptions)
+
+        where TInteraction : ApplicationCommandInteraction
+        where TContext : IApplicationCommandContext
+    {
+        return services.ConfigureApplicationCommands<TInteraction, TContext>((options, _) => configureOptions(options));
+    }
+
+    public static IServiceCollection ConfigureApplicationCommands<TInteraction,
+                                                                  TContext>(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions<TInteraction, TContext>, IServiceProvider> configureOptions)
+
+        where TInteraction : ApplicationCommandInteraction
+        where TContext : IApplicationCommandContext
+    {
+        services
+            .AddOptions<ApplicationCommandServiceOptions<TInteraction, TContext>>()
+            .PostConfigure(configureOptions);
+
+        return services;
+    }
+
+    public static IServiceCollection ConfigureApplicationCommands<TInteraction,
+                                                                  TContext,
+                                                                  TAutocompleteContext>(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>> configureOptions)
+
+        where TInteraction : ApplicationCommandInteraction
+        where TContext : IApplicationCommandContext
+        where TAutocompleteContext : IAutocompleteInteractionContext
+    {
+        return services.ConfigureApplicationCommands<TInteraction, TContext, TAutocompleteContext>((options, _) => configureOptions(options));
+    }
+
+    public static IServiceCollection ConfigureApplicationCommands<TInteraction,
+                                                                  TContext,
+                                                                  TAutocompleteContext>(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>, IServiceProvider> configureOptions)
+
+        where TInteraction : ApplicationCommandInteraction
+        where TContext : IApplicationCommandContext
+        where TAutocompleteContext : IAutocompleteInteractionContext
+    {
+        services
+            .AddOptions<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>>()
+            .PostConfigure(configureOptions);
+
+        return services;
+    }
+
+    // Add
+
+    public static IServiceCollection AddApplicationCommands<TInteraction,
+                                                            [DAM(DAMT.PublicConstructors)] TContext>(
+        this IServiceCollection services)
+
         where TInteraction : ApplicationCommandInteraction
         where TContext : IApplicationCommandContext
     {
         return services.AddApplicationCommands<TInteraction, TContext>((_, _) => { });
     }
 
-    public static IServiceCollection AddApplicationCommands<TInteraction, TContext>(this IServiceCollection services,
-                                                                                                Action<ApplicationCommandServiceOptions<TInteraction, TContext>> configureOptions)
+    public static IServiceCollection AddApplicationCommands<TInteraction,
+                                                            [DAM(DAMT.PublicConstructors)] TContext>(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions<TInteraction, TContext>> configureOptions)
+
         where TInteraction : ApplicationCommandInteraction
         where TContext : IApplicationCommandContext
     {
         return services.AddApplicationCommands<TInteraction, TContext>((options, _) => configureOptions(options));
     }
 
-    public static IServiceCollection AddApplicationCommands<TInteraction, TContext>(this IServiceCollection services,
-                                                                                                Action<ApplicationCommandServiceOptions<TInteraction, TContext>, IServiceProvider> configureOptions)
+    public static IServiceCollection AddApplicationCommands<TInteraction,
+                                                            [DAM(DAMT.PublicConstructors)] TContext>(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions<TInteraction, TContext>, IServiceProvider> configureOptions)
+
         where TInteraction : ApplicationCommandInteraction
         where TContext : IApplicationCommandContext
     {
         services
+            .AddOptions<ApplicationCommandServiceOptions>()
+            .BindConfiguration("Discord")
+            .BindConfiguration("Discord:ApplicationCommands");
+
+        services
             .AddOptions<ApplicationCommandServiceOptions<TInteraction, TContext>>()
-            .Configure(configureOptions);
+            .Configure<IOptions<ApplicationCommandServiceOptions>>((options, baseOptions) => options.Apply(baseOptions))
+            .PostConfigure(configureOptions);
 
         services.AddSingleton(services =>
         {
             var options = services.GetRequiredService<IOptions<ApplicationCommandServiceOptions<TInteraction, TContext>>>().Value;
-            return new ApplicationCommandService<TContext>(options.Configuration);
+            return new ApplicationCommandService<TContext>(options.CreateConfiguration());
         });
         services.AddSingleton<IApplicationCommandService>(services => services.GetRequiredService<ApplicationCommandService<TContext>>());
         services.AddSingleton<IService>(services => services.GetRequiredService<ApplicationCommandService<TContext>>());
@@ -51,15 +144,23 @@ public static class ApplicationCommandServiceServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddApplicationCommands<TInteraction, TContext, TAutocompleteContext>(this IServiceCollection services)
+    public static IServiceCollection AddApplicationCommands<TInteraction,
+                                                            [DAM(DAMT.PublicConstructors)] TContext,
+                                                            [DAM(DAMT.PublicConstructors)] TAutocompleteContext>(
+        this IServiceCollection services)
+
         where TInteraction : ApplicationCommandInteraction
         where TContext : IApplicationCommandContext where TAutocompleteContext : IAutocompleteInteractionContext
     {
         return services.AddApplicationCommands<TInteraction, TContext, TAutocompleteContext>((_, _) => { });
     }
 
-    public static IServiceCollection AddApplicationCommands<TInteraction, TContext, TAutocompleteContext>(this IServiceCollection services,
-                                                                                                                     Action<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>> configureOptions)
+    public static IServiceCollection AddApplicationCommands<TInteraction,
+                                                            [DAM(DAMT.PublicConstructors)] TContext,
+                                                            [DAM(DAMT.PublicConstructors)] TAutocompleteContext>(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>> configureOptions)
+
         where TInteraction : ApplicationCommandInteraction
         where TContext : IApplicationCommandContext
         where TAutocompleteContext : IAutocompleteInteractionContext
@@ -67,22 +168,32 @@ public static class ApplicationCommandServiceServiceCollectionExtensions
         return services.AddApplicationCommands<TInteraction, TContext, TAutocompleteContext>((options, _) => configureOptions(options));
     }
 
-    public static IServiceCollection AddApplicationCommands<TInteraction, TContext, TAutocompleteContext>(this IServiceCollection services,
-                                                                                                                            Action<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>, IServiceProvider> configureOptions)
+    public static IServiceCollection AddApplicationCommands<TInteraction,
+                                                            [DAM(DAMT.PublicConstructors)] TContext,
+                                                            [DAM(DAMT.PublicConstructors)] TAutocompleteContext>(
+        this IServiceCollection services,
+        Action<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>, IServiceProvider> configureOptions)
+
         where TInteraction : ApplicationCommandInteraction
         where TContext : IApplicationCommandContext
         where TAutocompleteContext : IAutocompleteInteractionContext
     {
         services
+            .AddOptions<ApplicationCommandServiceOptions>()
+            .BindConfiguration("Discord")
+            .BindConfiguration("Discord:ApplicationCommands");
+
+        services
             .AddOptions<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>>()
-            .Configure(configureOptions);
+            .Configure<IOptions<ApplicationCommandServiceOptions>>((options, baseOptions) => options.Apply(baseOptions))
+            .PostConfigure(configureOptions);
 
         services.AddSingleton<IOptions<ApplicationCommandServiceOptions<TInteraction, TContext>>>(services => services.GetRequiredService<IOptions<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>>>());
 
         services.AddSingleton(services =>
         {
             var options = services.GetRequiredService<IOptions<ApplicationCommandServiceOptions<TInteraction, TContext, TAutocompleteContext>>>().Value;
-            return new ApplicationCommandService<TContext, TAutocompleteContext>(options.Configuration);
+            return new ApplicationCommandService<TContext, TAutocompleteContext>(options.CreateConfiguration());
         });
         services.AddSingleton<ApplicationCommandService<TContext>>(services => services.GetRequiredService<ApplicationCommandService<TContext, TAutocompleteContext>>());
         services.AddSingleton<IApplicationCommandService>(services => services.GetRequiredService<ApplicationCommandService<TContext, TAutocompleteContext>>());

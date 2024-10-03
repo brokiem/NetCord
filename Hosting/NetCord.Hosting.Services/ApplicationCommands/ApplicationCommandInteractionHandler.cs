@@ -9,7 +9,11 @@ using NetCord.Services.ApplicationCommands;
 namespace NetCord.Hosting.Services.ApplicationCommands;
 
 [GatewayEvent(nameof(GatewayClient.InteractionCreate))]
-internal unsafe partial class ApplicationCommandInteractionHandler<TInteraction, TContext> : IGatewayEventHandler<Interaction>, IShardedGatewayEventHandler<Interaction>, IHttpInteractionHandler where TInteraction : ApplicationCommandInteraction where TContext : IApplicationCommandContext
+internal unsafe partial class ApplicationCommandInteractionHandler<TInteraction, [DAM(DAMT.PublicConstructors)] TContext>
+    : IGatewayEventHandler<Interaction>,
+      IShardedGatewayEventHandler<Interaction>,
+      IHttpInteractionHandler
+    where TInteraction : ApplicationCommandInteraction where TContext : IApplicationCommandContext
 {
     private IServiceProvider Services { get; }
 
@@ -34,7 +38,7 @@ internal unsafe partial class ApplicationCommandInteractionHandler<TInteraction,
 
         var optionsValue = options.Value;
 
-        if (optionsValue.UseScopes)
+        if (optionsValue.UseScopes.GetValueOrDefault(true))
         {
             _scopeFactory = services.GetService<IServiceScopeFactory>() ?? throw new InvalidOperationException($"'{nameof(IServiceScopeFactory)}' is not registered in the '{nameof(IServiceProvider)}', but it is required for using scopes.");
             _handleAsync = &HandleInteractionWithScopeAsync;
@@ -43,7 +47,7 @@ internal unsafe partial class ApplicationCommandInteractionHandler<TInteraction,
             _handleAsync = &HandleInteractionAsync;
 
         _createContext = optionsValue.CreateContext ?? ContextHelper.CreateContextDelegate<TInteraction, GatewayClient?, TContext>();
-        _resultHandler = optionsValue.ResultHandler;
+        _resultHandler = optionsValue.ResultHandler ?? new ApplicationCommandResultHandler<TContext>();
         _client = client;
     }
 

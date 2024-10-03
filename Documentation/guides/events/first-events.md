@@ -5,7 +5,7 @@
 The preferred way to receive events with the generic host is by implementing @NetCord.Hosting.Gateway.IGatewayEventHandler or @NetCord.Hosting.Gateway.IGatewayEventHandler`1.
 
 First, use @NetCord.Hosting.Gateway.GatewayEventHandlerServiceCollectionExtensions.AddGatewayEventHandlers(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly) to add all event handlers in an assembly. You also need to call @NetCord.Hosting.Gateway.GatewayEventHandlerHostExtensions.UseGatewayEventHandlers(Microsoft.Extensions.Hosting.IHost) to bind the handlers to the client.
-[!code-cs[Program.cs](FirstEventsHosting/Program.cs?highlight=18,21)]
+[!code-cs[Program.cs](FirstEventsHosting/Program.cs?highlight=17,20)]
 
 > [!NOTE]
 > All gateway event handlers require @NetCord.Hosting.Gateway.GatewayEventAttribute that specifies the event to bind to. The event argument must match the type of the handler, otherwise an exception will be thrown.
@@ -26,7 +26,7 @@ When you run this code, when someone reacts to a message, the bot will notify ev
 Other events work similar to these. You can play with them if you want!
 
 > [!NOTE]
-> When using @NetCord.Gateway.ShardedGatewayClient, you need to implement @NetCord.Hosting.Gateway.IShardedGatewayEventHandler or @NetCord.Hosting.Gateway.IShardedGatewayEventHandler`1 instead. You also need to use @NetCord.Hosting.Gateway.GatewayEventHandlerServiceCollectionExtensions.AddShardedGatewayEventHandlers(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly) to add event handlers instead.
+> When using @NetCord.Gateway.ShardedGatewayClient, you need to implement @NetCord.Hosting.Gateway.IShardedGatewayEventHandler or @NetCord.Hosting.Gateway.IShardedGatewayEventHandler`1 instead. You also need to use @NetCord.Hosting.Gateway.GatewayEventHandlerServiceCollectionExtensions.AddShardedGatewayEventHandlers(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly) to add event handlers and @NetCord.Hosting.Gateway.GatewayEventHandlerHostExtensions.UseShardedGatewayEventHandlers(Microsoft.Extensions.Hosting.IHost) to bind them instead.
 
 ## [Bare Bones](#tab/bare-bones)
 

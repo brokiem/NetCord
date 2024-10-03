@@ -8,7 +8,7 @@ namespace NetCord.Hosting.Services.Commands;
 public static class CommandServiceHostExtensions
 {
     public static IHost AddCommand<TContext>(this IHost host,
-                                             string[] aliases,
+                                             IEnumerable<string> aliases,
                                              Delegate handler,
                                              int priority = 0) where TContext : ICommandContext
     {
@@ -17,14 +17,22 @@ public static class CommandServiceHostExtensions
         return host;
     }
 
-    public static IHost AddCommandModule<TContext>(this IHost host, Type type) where TContext : ICommandContext
+    public static IHost AddCommandModule<TContext>(
+        this IHost host,
+        [DAM(DAMT.PublicConstructors | DAMT.PublicMethods)] Type type)
+
+        where TContext : ICommandContext
     {
         var service = host.Services.GetRequiredService<CommandService<TContext>>();
         service.AddModule(type);
         return host;
     }
 
-    public static IHost AddCommandModule<TContext, T>(this IHost host) where TContext : ICommandContext
+    public static IHost AddCommandModule<TContext,
+                                         [DAM(DAMT.PublicConstructors | DAMT.PublicMethods)] T>(
+        this IHost host)
+
+        where TContext : ICommandContext
     {
         var service = host.Services.GetRequiredService<CommandService<TContext>>();
         service.AddModule<T>();

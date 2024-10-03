@@ -23,9 +23,9 @@ public sealed partial class RestClient : IDisposable
     public RestClient(RestClientConfiguration? configuration = null)
     {
         configuration ??= new();
-
-        _baseUrl = $"https://{configuration.Hostname ?? Discord.RestHostname}/api/v{(int)configuration.Version}";
         
+        _baseUrl = $"https://{configuration.Hostname ?? Discord.RestHostname}/api/v{(int)configuration.Version.GetValueOrDefault(ApiVersion.V9)}";
+
         var requestHandler = _requestHandler = configuration.RequestHandler ?? new RestRequestHandler();
 
         requestHandler.AddDefaultHeader("User-Agent", [configuration.UserAgentHeader!]);

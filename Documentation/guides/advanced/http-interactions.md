@@ -8,7 +8,7 @@ Follow the [installation guide](installing-native-dependencies.md) to install th
 
 ## Usage
 
-To handle HTTP interactions, you need to use @NetCord.Hosting.Rest.RestClientHostBuilderExtensions.UseDiscordRest(Microsoft.Extensions.Hosting.IHostBuilder) to add the @NetCord.Rest.RestClient and then call @NetCord.Hosting.AspNetCore.EndpointRouteBuilderExtensions.UseHttpInteractions(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.String) to map the interactions route.
+To handle HTTP interactions, you need to use @NetCord.Hosting.Rest.RestClientServiceCollectionExtensions.AddDiscordRest(Microsoft.Extensions.DependencyInjection.IServiceCollection) to add the @NetCord.Rest.RestClient and then call @NetCord.Hosting.AspNetCore.EndpointRouteBuilderExtensions.UseHttpInteractions(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.String) to map the interactions route.
 
 [!code-cs[Program.cs](HttpInteractions/Program.cs?highlight=10,17-18)]
 
@@ -16,7 +16,7 @@ To handle HTTP interactions, you need to use @NetCord.Hosting.Rest.RestClientHos
 
 To make your bot receive interactions, you need to store the public key in the configuration and specify the endpoint URL in the [Discord Developer Portal](https://discord.com/developers/applications).
 
-![](../../images/httpInteractions_FindingPublicKeyAndSpecifyingInteractionEndpointUrl.png)
+![Shows 'Public Key' section in 'General Information' section](../../images/httpInteractions_FindingPublicKeyAndSpecifyingInteractionEndpointUrl.png)
 
 ### Specifying Public Key in Configuration
 
@@ -29,7 +29,7 @@ If your bot is hosted at `https://example.com` and you have specified `/interact
 
 For local testing, you can use [ngrok](https://ngrok.com). Use the following command to start ngrok with a correct port specified:
 ```bash
-ngrok http https://localhost:port
+ngrok http http://localhost:port
 ```
 
 It will generate a URL that you can use to receive interactions. For example, if the URL is `https://random-subdomain.ngrok-free.app` and you have specified `/interactions` pattern in @NetCord.Hosting.AspNetCore.EndpointRouteBuilderExtensions.UseHttpInteractions*, the endpoint URL will be `https://random-subdomain.ngrok-free.app/interactions`.

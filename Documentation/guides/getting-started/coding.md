@@ -4,22 +4,26 @@
 > This section assumes that you have a project with NetCord installed and you have a bot created. If not, go back!
 
 Before we start, you need a token of your bot... so you need to go to the [Discord Developer Portal](https://discord.com/developers/applications) and get it.
-![](../../images/coding_Token_1.png)
-![](../../images/coding_Token_2.png)
+
+- Go to `Bot` section and click `Reset Token`.
+  ![Go to 'Bot' section and click 'Reset Token'](../../images/coding_Token_1.png)
+
+- Then click `Copy` to copy the token to the clipboard.
+  ![Click 'Copy' to copy the token to the clipboard](../../images/coding_Token_2.png)
 
 > [!IMPORTANT]
 > You should never give your token to anybody.
 
 ## [Generic Host](#tab/generic-host)
 
-With the generic host, you can just use @NetCord.Hosting.Gateway.GatewayClientHostBuilderExtensions.UseDiscordGateway(Microsoft.Extensions.Hosting.IHostBuilder) to add your bot to the host. Quite easy, right?
+With the generic host, you can just use @NetCord.Hosting.Gateway.GatewayClientServiceCollectionExtensions.AddDiscordGateway(Microsoft.Extensions.DependencyInjection.IServiceCollection) to add your bot to the host. Quite easy, right?
 [!code-cs[Program.cs](CodingHosting/Program.cs)]
 
 Also note that the token needs to be stored in the configuration. You can for example use `appsettings.json` file. It should look like this:
 [!code-json[appsettings.json](CodingHosting/appsettings.json)]
 
 Now, when you run the code, your bot should be online!
-![](../../images/coding_BotOnline.png)
+![Bot being online](../../images/coding_BotOnline.png)
 
 ## [Bare Bones](#tab/bare-bones)
 
@@ -33,7 +37,7 @@ Now it's time to finally... make the bot online! To do it, add the following lin
 [!code-cs[Program.cs](Coding/Program.cs#L12-L13)]
 
 Now, when you run the code, your bot should be online!
-![](../../images/coding_BotOnline.png)
+![Bot being online](../../images/coding_BotOnline.png)
 
 ### The Final Product
 [!code-cs[Program.cs](Coding/Program.cs)]

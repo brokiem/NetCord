@@ -9,7 +9,15 @@ using NetCord.Services.ApplicationCommands;
 namespace NetCord.Hosting.Services.ApplicationCommands;
 
 [GatewayEvent(nameof(GatewayClient.InteractionCreate))]
-internal unsafe partial class AutocompleteInteractionHandler<TInteraction, TContext, TAutocompleteContext> : IGatewayEventHandler<Interaction>, IShardedGatewayEventHandler<Interaction>, IHttpInteractionHandler where TInteraction : ApplicationCommandInteraction where TContext : IApplicationCommandContext where TAutocompleteContext : IAutocompleteInteractionContext
+internal unsafe partial class AutocompleteInteractionHandler<TInteraction,
+                                                             TContext,
+                                                             [DAM(DAMT.PublicConstructors)] TAutocompleteContext>
+    : IGatewayEventHandler<Interaction>,
+      IShardedGatewayEventHandler<Interaction>,
+      IHttpInteractionHandler
+    where TInteraction : ApplicationCommandInteraction
+    where TContext : IApplicationCommandContext
+    where TAutocompleteContext : IAutocompleteInteractionContext
 {
     private IServiceProvider Services { get; }
 
@@ -34,7 +42,7 @@ internal unsafe partial class AutocompleteInteractionHandler<TInteraction, TCont
 
         var optionsValue = options.Value;
 
-        if (optionsValue.UseScopes)
+        if (optionsValue.UseScopes.GetValueOrDefault(true))
         {
             _scopeFactory = services.GetService<IServiceScopeFactory>() ?? throw new InvalidOperationException($"'{nameof(IServiceScopeFactory)}' is not registered in the '{nameof(IServiceProvider)}', but it is required for using scopes.");
             _handleAsync = &HandleInteractionWithScopeAsync;
@@ -43,7 +51,7 @@ internal unsafe partial class AutocompleteInteractionHandler<TInteraction, TCont
             _handleAsync = &HandleInteractionAsync;
 
         _createContext = optionsValue.CreateAutocompleteContext ?? ContextHelper.CreateContextDelegate<AutocompleteInteraction, GatewayClient?, TAutocompleteContext>();
-        _resultHandler = optionsValue.AutocompleteResultHandler;
+        _resultHandler = optionsValue.AutocompleteResultHandler ?? new AutocompleteInteractionResultHandler<TAutocompleteContext>();
         _client = client;
     }
 
