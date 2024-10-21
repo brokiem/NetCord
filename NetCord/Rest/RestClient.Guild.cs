@@ -179,6 +179,10 @@ public partial class RestClient
         => (await (await SendRequestAsync(HttpMethod.Get, $"/guilds/{guildId}/roles", null, new(guildId), properties, cancellationToken: cancellationToken).ConfigureAwait(false)).ToObjectAsync(Serialization.Default.JsonRoleArray).ConfigureAwait(false)).Select(r => new Role(r, guildId, this)).ToArray();
 
     [GenerateAlias([typeof(RestGuild)], nameof(RestGuild.Id), TypeNameOverride = nameof(Guild))]
+    public async Task<Role> GetGuildRoleAsync(ulong guildId, ulong roleId, RestRequestProperties? properties = null, CancellationToken cancellationToken = default)
+        => new(await (await SendRequestAsync(HttpMethod.Get, $"/guilds/{guildId}/roles/{roleId}", null, new(guildId), properties, cancellationToken: cancellationToken).ConfigureAwait(false)).ToObjectAsync(Serialization.Default.JsonRole).ConfigureAwait(false), guildId, this);
+
+    [GenerateAlias([typeof(RestGuild)], nameof(RestGuild.Id), TypeNameOverride = nameof(Guild))]
     public async Task<Role> CreateGuildRoleAsync(ulong guildId, RoleProperties guildRoleProperties, RestRequestProperties? properties = null, CancellationToken cancellationToken = default)
     {
         using (HttpContent content = new JsonContent<RoleProperties>(guildRoleProperties, Serialization.Default.RoleProperties))
@@ -296,24 +300,5 @@ public partial class RestClient
         action(guildOnboardingOptions);
         using (HttpContent content = new JsonContent<GuildOnboardingOptions>(guildOnboardingOptions, Serialization.Default.GuildOnboardingOptions))
             return new(await (await SendRequestAsync(HttpMethod.Put, content, $"/guilds/{guildId}/onboarding", null, new(guildId), properties, cancellationToken: cancellationToken).ConfigureAwait(false)).ToObjectAsync(Serialization.Default.JsonGuildOnboarding).ConfigureAwait(false), this);
-    }
-
-    [GenerateAlias([typeof(RestGuild)], nameof(RestGuild.Id), TypeNameOverride = nameof(Guild))]
-    public async Task ModifyCurrentGuildUserVoiceStateAsync(ulong guildId, Action<CurrentUserVoiceStateOptions> action, RestRequestProperties? properties = null, CancellationToken cancellationToken = default)
-    {
-        CurrentUserVoiceStateOptions obj = new();
-        action(obj);
-        using (HttpContent content = new JsonContent<CurrentUserVoiceStateOptions>(obj, Serialization.Default.CurrentUserVoiceStateOptions))
-            await SendRequestAsync(HttpMethod.Patch, content, $"/guilds/{guildId}/voice-states/@me", null, new(guildId), properties, cancellationToken: cancellationToken).ConfigureAwait(false);
-    }
-
-    [GenerateAlias([typeof(RestGuild)], nameof(RestGuild.Id), TypeNameOverride = nameof(Guild))]
-    [GenerateAlias([typeof(GuildUser)], nameof(GuildUser.GuildId), null, nameof(GuildUser.Id))]
-    public async Task ModifyGuildUserVoiceStateAsync(ulong guildId, ulong channelId, ulong userId, Action<VoiceStateOptions> action, RestRequestProperties? properties = null, CancellationToken cancellationToken = default)
-    {
-        VoiceStateOptions obj = new(channelId);
-        action(obj);
-        using (HttpContent content = new JsonContent<VoiceStateOptions>(obj, Serialization.Default.VoiceStateOptions))
-            await SendRequestAsync(HttpMethod.Patch, content, $"/guilds/{guildId}/voice-states/{userId}", null, new(guildId), properties, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }
