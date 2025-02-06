@@ -15,20 +15,21 @@ using NetCord.Services.Commands;
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services
-    .AddSingleton<IDataProvider, DataProvider>()
+    .AddSingleton<ISomeService, SomeService>()
     .AddDiscordGateway(o => o.Intents = GatewayIntents.GuildMessages | GatewayIntents.DirectMessages | GatewayIntents.MessageContent)
     .AddCommands<CommandContext>()
-    .AddApplicationCommands<SlashCommandInteraction, SlashCommandContext>();
+    .AddApplicationCommands<ApplicationCommandInteraction, ApplicationCommandContext>();
 
 var host = builder.Build();
 
 host.AddModules(typeof(Program).Assembly);
 
-host.AddSlashCommand<SlashCommandContext>(
-    name: "data",
-    description: "Shows the data!",
-    (IDataProvider dataProvider, SlashCommandContext context, int count) => string.Join(' ', dataProvider.GetData()
-                                                                                                         .Take(count)));
+host.AddSlashCommand(
+        name: "data",
+        description: "Shows the data!",
+        (ISomeService someService, ApplicationCommandContext context, int count) => string.Join(' ',
+                                                                                                someService.GetSomeData()
+                                                                                                           .Take(count)));
 
 host.UseGatewayEventHandlers();
 

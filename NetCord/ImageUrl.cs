@@ -79,7 +79,7 @@ public class ImageUrl : ISpanFormattable
     {
         return format.HasValue
             ? GetFormat(format.GetValueOrDefault())
-            : (hash.StartsWith("a_") ? "gif" : "png");
+            : hash.AsSpanFast() is ['a', '_', ..] ? "gif" : "png";
     }
 
     internal static string GetFormat(ImageFormat format)

@@ -14,7 +14,7 @@ public class Message(JsonMessage jsonModel, Guild? guild, TextChannel? channel, 
         return new(jsonModel, guild, channel, client);
     }
 
-    internal static (Guild?, TextChannel?) GetCacheData(JsonMessage jsonModel, IGatewayClientCache cache)
+    private static (Guild?, TextChannel?) GetCacheData(JsonMessage jsonModel, IGatewayClientCache cache)
     {
         Guild? guild;
         TextChannel? channel;
@@ -37,7 +37,7 @@ public class Message(JsonMessage jsonModel, Guild? guild, TextChannel? channel, 
         else
         {
             guild = null;
-            channel = cache.DMChannels.GetValueOrDefault(jsonModel.ChannelId);
+            channel = null;
         }
 
         return (guild, channel);

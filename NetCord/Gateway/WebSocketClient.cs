@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 
-using NetCord.Gateway.JsonModels;
 using NetCord.Gateway.LatencyTimers;
 using NetCord.Gateway.ReconnectStrategies;
 using NetCord.Gateway.WebSockets;
@@ -175,7 +173,6 @@ public abstract class WebSocketClient : IDisposable
         RetryHandling = WebSocketRetryHandling.RetryRateLimit,
     };
 
-    private readonly object _eventsLock = new();
     private readonly IWebSocketConnectionProvider _connectionProvider;
     private readonly IReconnectStrategy _reconnectStrategy;
     private readonly IRateLimiterProvider _rateLimiterProvider;
@@ -224,7 +221,7 @@ public abstract class WebSocketClient : IDisposable
         var connection = connectionState.Connection;
 
         var description = connection.CloseStatusDescription;
-        InvokeLog(LogMessage.Info("Disconnected", string.IsNullOrEmpty(description) ? null : (description.EndsWith('.') ? description[..^1] : description)));
+        InvokeLog(LogMessage.Info("Disconnected", description is [.., '.'] ? description[..^1] : description));
 
         var reconnect = Reconnect((WebSocketCloseStatus?)connection.CloseStatus, description);
 
@@ -255,8 +252,7 @@ public abstract class WebSocketClient : IDisposable
     {
         try
         {
-            var payload = CreatePayload(data);
-            await ProcessPayloadAsync(state, connectionState, payload).ConfigureAwait(false);
+            await ProcessPayloadAsync(state, connectionState, data.Span).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -665,29 +661,9 @@ public abstract class WebSocketClient : IDisposable
 
     private protected abstract ValueTask HeartbeatAsync(ConnectionState connectionState, CancellationToken cancellationToken = default);
 
-    private protected virtual JsonPayload CreatePayload(ReadOnlyMemory<byte> payload) => JsonSerializer.Deserialize(payload.Span, Serialization.Default.JsonPayload)!;
-
-    private protected abstract Task ProcessPayloadAsync(State state, ConnectionState connectionState, JsonPayload payload);
+    private protected abstract Task ProcessPayloadAsync(State state, ConnectionState connectionState, ReadOnlySpan<byte> payload);
 
     private protected async void InvokeLog(LogMessage logMessage)
-    {
-        var log = Log;
-        if (log is not null)
-        {
-            try
-            {
-                ValueTask task;
-                lock (_eventsLock)
-                    task = log(logMessage);
-                await task.ConfigureAwait(false);
-            }
-            catch
-            {
-            }
-        }
-    }
-
-    private async void InvokeLogWithoutLock(LogMessage logMessage)
     {
         var log = Log;
         if (log is not null)
@@ -713,17 +689,14 @@ public abstract class WebSocketClient : IDisposable
         if (@event is not null)
         {
             ValueTask task;
-            lock (_eventsLock)
+            try
             {
-                try
-                {
-                    task = @event();
-                }
-                catch (Exception ex)
-                {
-                    InvokeLogWithoutLock(LogMessage.Error(ex));
-                    return default;
-                }
+                task = @event();
+            }
+            catch (Exception ex)
+            {
+                InvokeLog(LogMessage.Error(ex));
+                return default;
             }
 
             return AwaitEventAsync(task);
@@ -736,19 +709,17 @@ public abstract class WebSocketClient : IDisposable
     {
         if (@event is not null)
         {
-            ValueTask task;
             var data = dataFunc();
-            lock (_eventsLock)
+
+            ValueTask task;
+            try
             {
-                try
-                {
-                    task = @event(data);
-                }
-                catch (Exception ex)
-                {
-                    InvokeLogWithoutLock(LogMessage.Error(ex));
-                    return default;
-                }
+                task = @event(data);
+            }
+            catch (Exception ex)
+            {
+                InvokeLog(LogMessage.Error(ex));
+                return default;
             }
 
             return AwaitEventAsync(task);
@@ -762,17 +733,14 @@ public abstract class WebSocketClient : IDisposable
         if (@event is not null)
         {
             ValueTask task;
-            lock (_eventsLock)
+            try
             {
-                try
-                {
-                    task = @event(data);
-                }
-                catch (Exception ex)
-                {
-                    InvokeLogWithoutLock(LogMessage.Error(ex));
-                    return default;
-                }
+                task = @event(data);
+            }
+            catch (Exception ex)
+            {
+                InvokeLog(LogMessage.Error(ex));
+                return default;
             }
 
             return AwaitEventAsync(task);
@@ -786,27 +754,23 @@ public abstract class WebSocketClient : IDisposable
         if (@event is not null)
         {
             ValueTask task;
-            lock (_eventsLock)
+            try
             {
-                try
-                {
-                    task = @event(data);
-                    updateData(data);
-                }
-                catch (Exception ex)
-                {
-                    updateData(data);
-                    InvokeLogWithoutLock(LogMessage.Error(ex));
-                    return default;
-                }
+                task = @event(data);
+                updateData(data);
+            }
+            catch (Exception ex)
+            {
+                updateData(data);
+                InvokeLog(LogMessage.Error(ex));
+                return default;
             }
 
             return AwaitEventAsync(task);
         }
         else
         {
-            lock (_eventsLock)
-                updateData(data);
+            updateData(data);
             return default;
         }
     }
@@ -815,83 +779,27 @@ public abstract class WebSocketClient : IDisposable
     {
         if (@event is not null)
         {
-            ValueTask task;
             var data = dataFunc();
-            lock (_eventsLock)
+
+            ValueTask task;
+            try
             {
-                try
-                {
-                    task = @event(data);
-                    updateData();
-                }
-                catch (Exception ex)
-                {
-                    updateData();
-                    InvokeLogWithoutLock(LogMessage.Error(ex));
-                    return default;
-                }
+                task = @event(data);
+                updateData();
+            }
+            catch (Exception ex)
+            {
+                updateData();
+                InvokeLog(LogMessage.Error(ex));
+                return default;
             }
 
             return AwaitEventAsync(task);
         }
         else
         {
-            lock (_eventsLock)
-                updateData();
+            updateData();
             return default;
-        }
-    }
-
-    private protected async ValueTask InvokeEventAsync<TPartial, T>(Func<T, ValueTask>? @event, Func<TPartial> partialDataFunc, Func<TPartial, T> dataFunc, Func<TPartial, bool> cacheFunc, Func<TPartial, SemaphoreSlim> semaphoreFunc, Func<TPartial, ValueTask> cacheAsyncFunc)
-    {
-        if (@event is not null)
-        {
-            var partialData = partialDataFunc();
-            ValueTask task;
-            if (cacheFunc(partialData))
-            {
-                var semaphore = semaphoreFunc(partialData);
-                await semaphore.WaitAsync().ConfigureAwait(false);
-                try
-                {
-                    await cacheAsyncFunc(partialData).ConfigureAwait(false);
-                    var data = dataFunc(partialData);
-                    lock (_eventsLock)
-                    {
-                        try
-                        {
-                            task = @event(data);
-                        }
-                        catch (Exception ex)
-                        {
-                            InvokeLogWithoutLock(LogMessage.Error(ex));
-                            return;
-                        }
-                    }
-                }
-                finally
-                {
-                    semaphore.Release();
-                }
-            }
-            else
-            {
-                var data = dataFunc(partialData);
-                lock (_eventsLock)
-                {
-                    try
-                    {
-                        task = @event(data);
-                    }
-                    catch (Exception ex)
-                    {
-                        InvokeLogWithoutLock(LogMessage.Error(ex));
-                        return;
-                    }
-                }
-            }
-
-            await AwaitEventAsync(task).ConfigureAwait(false);
         }
     }
 

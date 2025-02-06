@@ -17,13 +17,13 @@ public class JsonGuildScheduledEventRecurrenceRule
     public int Interval { get; set; }
 
     [JsonPropertyName("by_weekday")]
-    public GuildScheduledEventRecurrenceRuleWeekday? ByWeekday { get; set; }
+    public GuildScheduledEventRecurrenceRuleWeekday[]? ByWeekday { get; set; }
 
     [JsonPropertyName("by_n_weekday")]
-    public JsonGuildScheduledEventRecurrenceRuleNWeekday ByNWeekday { get; set; }
+    public JsonGuildScheduledEventRecurrenceRuleNWeekday[]? ByNWeekday { get; set; }
 
     [JsonPropertyName("by_month")]
-    public GuildScheduledEventRecurrenceRuleMonth? ByMonth { get; set; }
+    public GuildScheduledEventRecurrenceRuleMonth[]? ByMonth { get; set; }
 
     [JsonPropertyName("by_month_day")]
     public int[]? ByMonthDay { get; set; }

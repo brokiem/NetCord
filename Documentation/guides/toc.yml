@@ -2,16 +2,26 @@
   items:
     - name: Installation
       href: getting-started/installation.md
-    - name: Prerequisites
-      href: getting-started/prerequisites.md
-    - name: Setting Up Your Discord Bot
-      href: getting-started/coding.md
+    - name: Making a Bot
+      href: getting-started/making-a-bot.md
 - name: Working with Events
   items:
     - name: Intents
       href: events/intents.md
     - name: First Events
       href: events/first-events.md
+- name: Basic Concepts
+  items:
+    - name: Responding to Interactions
+      href: basic-concepts/responding-to-interactions.md
+    - name: Sending Messages
+      href: basic-concepts/sending-messages.md
+    - name: HTTP Interactions
+      href: basic-concepts/http-interactions.md
+    - name: Sharding
+      href: basic-concepts/sharding.md
+    - name: Voice
+      href: basic-concepts/voice.md
 - name: Services
   items:
     - name: Introduction
@@ -20,8 +30,6 @@
       items:
         - name: Introduction
           href: services/application-commands/introduction.md
-        - name: Multiple Services
-          href: services/application-commands/multiple-services.md
         - name: Parameters
           href: services/application-commands/parameters.md
         - name: Subcommands
@@ -30,6 +38,8 @@
           href: services/application-commands/permissions.md
         - name: Localizations
           href: services/application-commands/localizations.md
+        - name: Multiple Services
+          href: services/application-commands/multiple-services.md
     - name: Component Interactions
       items:
         - name: Introduction
@@ -52,13 +62,3 @@
       href: services/preconditions.md
     - name: Custom Module Bases and Contexts
       href: services/custom-module-bases-and-contexts.md
-- name: Advanced Concepts
-  items:
-    - name: HTTP Interactions
-      href: advanced/http-interactions.md
-    - name: Sharding
-      href: advanced/sharding.md
-    - name: Voice
-      href: advanced/voice.md
-    - name: Google Cloud Platform Attachments
-      href: advanced/google-cloud-platform-attachments.md

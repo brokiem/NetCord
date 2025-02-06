@@ -1,8 +1,8 @@
 # First Events
 
-## [Generic Host](#tab/generic-host)
+## [.NET Generic Host](#tab/generic-host)
 
-The preferred way to receive events with the generic host is by implementing @NetCord.Hosting.Gateway.IGatewayEventHandler or @NetCord.Hosting.Gateway.IGatewayEventHandler`1.
+The preferred way to receive events with the .NET Generic Host is by implementing @NetCord.Hosting.Gateway.IGatewayEventHandler or @NetCord.Hosting.Gateway.IGatewayEventHandler`1.
 
 First, use @NetCord.Hosting.Gateway.GatewayEventHandlerServiceCollectionExtensions.AddGatewayEventHandlers(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly) to add all event handlers in an assembly. You also need to call @NetCord.Hosting.Gateway.GatewayEventHandlerHostExtensions.UseGatewayEventHandlers(Microsoft.Extensions.Hosting.IHost) to bind the handlers to the client.
 [!code-cs[Program.cs](FirstEventsHosting/Program.cs?highlight=17,20)]
@@ -26,7 +26,7 @@ When you run this code, when someone reacts to a message, the bot will notify ev
 Other events work similar to these. You can play with them if you want!
 
 > [!NOTE]
-> When using @NetCord.Gateway.ShardedGatewayClient, you need to implement @NetCord.Hosting.Gateway.IShardedGatewayEventHandler or @NetCord.Hosting.Gateway.IShardedGatewayEventHandler`1 instead. You also need to use @NetCord.Hosting.Gateway.GatewayEventHandlerServiceCollectionExtensions.AddShardedGatewayEventHandlers(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly) to add event handlers and @NetCord.Hosting.Gateway.GatewayEventHandlerHostExtensions.UseShardedGatewayEventHandlers(Microsoft.Extensions.Hosting.IHost) to bind them instead.
+> When using @NetCord.Gateway.ShardedGatewayClient, you need to implement @NetCord.Hosting.Gateway.IShardedGatewayEventHandler or @NetCord.Hosting.Gateway.IShardedGatewayEventHandler`1 instead. You also need to use @NetCord.Hosting.Gateway.GatewayEventHandlerServiceCollectionExtensions.AddShardedGatewayEventHandlers* to add event handlers and @NetCord.Hosting.Gateway.GatewayEventHandlerHostExtensions.UseShardedGatewayEventHandlers* to bind them instead. See @sharding?text=Sharding for more information.
 
 ## [Bare Bones](#tab/bare-bones)
 

@@ -4,8 +4,11 @@ using NetCord.JsonModels;
 
 namespace NetCord.Rest.JsonModels;
 
-public class JsonConnection : JsonEntity
+public class JsonConnection
 {
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
@@ -27,7 +30,7 @@ public class JsonConnection : JsonEntity
     [JsonPropertyName("show_activity")]
     public bool ShowActivity { get; set; }
 
-    [JsonPropertyName("show_activity")]
+    [JsonPropertyName("two_way_link")]
     public bool TwoWayLink { get; set; }
 
     [JsonPropertyName("visibility")]

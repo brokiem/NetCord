@@ -24,7 +24,6 @@ public class GatewayClientConfiguration : IWebSocketClientConfiguration
     public int? LargeThreshold { get; init; }
     public PresenceProperties? Presence { get; init; }
     public Shard? Shard { get; init; }
-    public bool? CacheDMChannels { get; init; }
     public RestClientConfiguration? RestClientConfiguration { get; init; }
     public ClientStateProperties? ClientState { get; init; }
     public int Capabilities { get; init; } = 0;

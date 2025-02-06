@@ -88,11 +88,10 @@ internal static class TypeHelper
     {
         var parametersLength = parameters.Length;
         var arguments = new Expression[parametersLength];
-        var argIndex = 0;
         for (int i = 0; i < parametersLength; i++)
         {
             var parameter = parameters[i];
-            arguments[argIndex++] = ServiceProviderHelper.GetGetServiceExpression(parameter, serviceProvider, notFound);
+            arguments[i] = ServiceProviderHelper.GetGetServiceExpression(parameter, serviceProvider, notFound);
         }
 
         return arguments;

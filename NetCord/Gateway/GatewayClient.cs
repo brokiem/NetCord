@@ -19,9 +19,6 @@ public partial class GatewayClient : WebSocketClient, IEntity
     private readonly GatewayIntents _intents;
     private readonly ClientStateProperties _clientState;
     private readonly int? _capabilities;
-    private readonly bool _cacheDMChannels;
-    private readonly object? _DMsLock;
-    private readonly Dictionary<ulong, SemaphoreSlim>? _DMSemaphores;
     private readonly IGatewayCompression _compression;
     private readonly bool _disposeRest;
 
@@ -842,14 +839,7 @@ public partial class GatewayClient : WebSocketClient, IEntity
         _intents = configuration.Intents.GetValueOrDefault(GatewayIntents.AllNonPrivileged);
         _clientState = configuration.ClientState ?? ClientStateProperties.Default;
         _capabilities = configuration.Capabilities;
-        _cacheDMChannels = configuration.CacheDMChannels.GetValueOrDefault(true);
-
-        if (_cacheDMChannels)
-        {
-            _DMsLock = new();
-            _DMSemaphores = [];
-        }
-
+        
         var compression = _compression = configuration.Compression ?? IGatewayCompression.CreateDefault();
         Uri = new($"wss://{configuration.Hostname ?? Discord.GatewayHostname}/?v={(int)configuration.Version.GetValueOrDefault(ApiVersion.V9)}&encoding=json&compress={compression.Name}", UriKind.Absolute);
         Cache = configuration.Cache ?? new GatewayClientCache();
@@ -924,11 +914,15 @@ public partial class GatewayClient : WebSocketClient, IEntity
         return SendConnectionPayloadAsync(connectionState, serializedPayload, _internalPayloadProperties, cancellationToken);
     }
 
-    private protected override JsonPayload CreatePayload(ReadOnlyMemory<byte> payload) => JsonSerializer.Deserialize(_compression.Decompress(payload).Span, Serialization.Default.JsonPayload)!;
-
-    private protected override async Task ProcessPayloadAsync(State state, ConnectionState connectionState, JsonPayload payload)
+    private protected override Task ProcessPayloadAsync(State state, ConnectionState connectionState, ReadOnlySpan<byte> payload)
     {
-        switch ((GatewayOpcode)payload.Opcode)
+        var jsonPayload = JsonSerializer.Deserialize(_compression.Decompress(payload), Serialization.Default.JsonGatewayPayload)!;
+        return HandlePayloadAsync(state, connectionState, jsonPayload);
+    }
+
+    private async Task HandlePayloadAsync(State state, ConnectionState connectionState, JsonGatewayPayload payload)
+    {
+        switch (payload.Opcode)
         {
             case GatewayOpcode.Dispatch:
                 SequenceNumber = payload.SequenceNumber.GetValueOrDefault();
@@ -997,7 +991,7 @@ public partial class GatewayClient : WebSocketClient, IEntity
         return SendPayloadAsync(payload.Serialize(Serialization.Default.GatewayPayloadPropertiesGuildUsersRequestProperties), properties, cancellationToken);
     }
 
-    private async Task ProcessEventAsync(State state, ConnectionState connectionState, JsonPayload payload)
+    private async Task ProcessEventAsync(State state, ConnectionState connectionState, JsonGatewayPayload payload)
     {
         var data = payload.Data.GetValueOrDefault();
         var name = payload.Event!;
@@ -1319,36 +1313,12 @@ public partial class GatewayClient : WebSocketClient, IEntity
                 break;
             case "MESSAGE_CREATE":
                 {
-                    await InvokeEventAsync(
-                        MessageCreate,
-                        () => data.ToObject(Serialization.Default.JsonMessage),
-                        json => Message.CreateFromJson(json, Cache, Rest),
-                        json => _cacheDMChannels && !json.GuildId.HasValue && !json.Flags.GetValueOrDefault().HasFlag(MessageFlags.Ephemeral),
-                        json =>
-                        {
-                            var channelId = json.ChannelId;
-                            if (!_DMSemaphores!.TryGetValue(channelId, out var semaphore))
-                                _DMSemaphores.Add(channelId, semaphore = new(1, 1));
-                            return semaphore;
-                        },
-                        json => CacheChannelAsync(json.ChannelId)).ConfigureAwait(false);
+                    await InvokeEventAsync(MessageCreate, () => Message.CreateFromJson(data.ToObject(Serialization.Default.JsonMessage), Cache, Rest)).ConfigureAwait(false);
                 }
                 break;
             case "MESSAGE_UPDATE":
                 {
-                    await InvokeEventAsync(
-                        MessageUpdate,
-                        () => data.ToObject(Serialization.Default.JsonMessage),
-                        json => Message.CreateFromJson(json, Cache, Rest),
-                        json => _cacheDMChannels && !json.GuildId.HasValue && !json.Flags.GetValueOrDefault().HasFlag(MessageFlags.Ephemeral),
-                        json =>
-                        {
-                            var channelId = json.ChannelId;
-                            if (!_DMSemaphores!.TryGetValue(channelId, out var semaphore))
-                                _DMSemaphores.Add(channelId, semaphore = new(1, 1));
-                            return semaphore;
-                        },
-                        json => CacheChannelAsync(json.ChannelId)).ConfigureAwait(false);
+                    await InvokeEventAsync(MessageUpdate, () => Message.CreateFromJson(data.ToObject(Serialization.Default.JsonMessage), Cache, Rest)).ConfigureAwait(false);
                 }
                 break;
             case "MESSAGE_DELETE":
@@ -1486,20 +1456,6 @@ public partial class GatewayClient : WebSocketClient, IEntity
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         ulong GetGuildId() => data.GetProperty("guild_id").ToObject(Serialization.Default.UInt64);
-
-        async ValueTask CacheChannelAsync(ulong channelId)
-        {
-            var cache = Cache;
-            if (!cache.DMChannels.ContainsKey(channelId))
-            {
-                var channel = await Rest.GetChannelAsync(channelId).ConfigureAwait(false);
-                if (channel is DMChannel dMChannel)
-                {
-                    lock (_DMsLock!)
-                        Cache = Cache.CacheDMChannel(dMChannel);
-                }
-            }
-        }
     }
 
     protected override void Dispose(bool disposing)

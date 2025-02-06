@@ -107,6 +107,11 @@ article img {
   border-radius: 10px;
 }
 
+.tabGroup > section > pre:last-child,
+.alert > :last-child {
+  margin-bottom: 0;
+}
+
 article img {
   margin: 10px 0;
   box-shadow: 3px 3px 6px #111;
@@ -342,14 +347,40 @@ code,
 }
 
 .features-section {
-  padding: 100px 0;
-  text-align: center;
+  padding-bottom: 100px;
+  color: var(--bs-emphasis-color);
+}
+
+.code-example {
+  width: fit-content;
+  max-width: 100%;
+  font-size: 1em;
+}
+
+  .code-example pre code.hljs {
+    padding: 1.5em !important;
+  }
+
+.code-example-section {
+  margin-top: 100px;
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   color: var(--bs-emphasis-color);
 }
 
 .section-title {
   font-size: 30px;
   margin-bottom: 30px;
+  text-align: center;
+}
+
+.section-text {
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 0 10px;
 }
 
 .features-container {
@@ -411,11 +442,7 @@ body {
   }
 
   .section-title {
-    font-size: 7vw;
-  }
-
-  .features-section {
-    padding: 50px 0;
+    font-size: 6.5vw;
   }
 
   .feature-item {
@@ -433,6 +460,10 @@ body {
   .navbar > .container-xxl {
     padding-left: 40px;
     padding-right: 40px;
+  }
+
+  .code-example {
+    font-size: 1.2em;
   }
 }
 

@@ -121,11 +121,14 @@ public readonly struct Timestamp : IEquatable<Timestamp>, ISpanFormattable, ISpa
 
     public static bool TryParse(ReadOnlySpan<char> value, [MaybeNullWhen(false)] out Timestamp timestamp)
     {
-        if (value.StartsWith("<t:") && value.EndsWith(">"))
+        if (value is ['<', 't', ':', .., '>'])
         {
+            const long MinTimestamp = -62135596800;
+            const long MaxTimestamp = 253402300799;
+
             if (value.Length > 5 && value[^3] == ':')
             {
-                if (long.TryParse(value[3..^3], NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var result))
+                if (long.TryParse(value[3..^3], NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var result) && result is >= MinTimestamp and <= MaxTimestamp)
                 {
                     timestamp = new(DateTimeOffset.FromUnixTimeSeconds(result), (TimestampStyle)value[^2]);
                     return true;
@@ -133,7 +136,7 @@ public readonly struct Timestamp : IEquatable<Timestamp>, ISpanFormattable, ISpa
             }
             else
             {
-                if (long.TryParse(value[3..^1], NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var result))
+                if (long.TryParse(value[3..^1], NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var result) && result is >= MinTimestamp and <= MaxTimestamp)
                 {
                     timestamp = new(DateTimeOffset.FromUnixTimeSeconds(result));
                     return true;

@@ -49,9 +49,8 @@ public class CodeBlock(string code, string? formatter = null) : ISpanFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)] // Inline so that 'strictMode' branches can be eliminated if it is a constant
     public static bool TryParse(ReadOnlySpan<char> s, bool strictMode, [MaybeNullWhen(false)] out CodeBlock result)
     {
-        //                It needs to start and end with 3 backticks and have at least 1 character in between
-        //                3 + 1 + 3 = 7
-        var isCodeBlock = s.Length >= 7 && s.StartsWith("```") && s.EndsWith("```");
+        // It needs to start and end with 3 backticks and have at least 1 character in between
+        var isCodeBlock = s is ['`', '`', '`', _, .., '`', '`', '`'];
 
         if (!isCodeBlock)
         {

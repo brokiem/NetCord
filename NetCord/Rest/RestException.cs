@@ -26,15 +26,16 @@ public class RestException : Exception
 
     private static string GetMessage(HttpStatusCode statusCode, string? reasonPhrase, string errorMessage)
     {
+        var errorMessageSpan = errorMessage.AsSpanFast();
         if (string.IsNullOrEmpty(reasonPhrase))
         {
-            return errorMessage.EndsWith('.')
+            return errorMessageSpan is [.., '.']
                 ? $"Response status code does not indicate success: {(int)statusCode}. {errorMessage}"
                 : $"Response status code does not indicate success: {(int)statusCode}. {errorMessage}.";
         }
         else
         {
-            return errorMessage.EndsWith('.')
+            return errorMessageSpan is [.., '.']
                 ? $"Response status code does not indicate success: {(int)statusCode} ({reasonPhrase}). {errorMessage}"
                 : $"Response status code does not indicate success: {(int)statusCode} ({reasonPhrase}). {errorMessage}.";
         }

@@ -8,7 +8,7 @@ public readonly struct GuildNavigation(GuildNavigationType type) : IEquatable<Gu
 
     public static bool TryParse(ReadOnlySpan<char> value, out GuildNavigation guildNavigation)
     {
-        if (value.StartsWith("<id:") && value.EndsWith(">") && TryParseType(value[4..^1], out var type))
+        if (value is ['<', 'i', 'd', ':', .., '>'] && TryParseType(value[4..^1], out var type))
         {
             guildNavigation = new(type);
             return true;

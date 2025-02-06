@@ -15,6 +15,11 @@ public class Connection : IJsonModel<JsonModels.JsonConnection>
     }
 
     /// <summary>
+    /// The ID of the connection account.
+    /// </summary>
+    public string Id => _jsonModel.Id;
+
+    /// <summary>
     /// The username of the connection account.
     /// </summary>
     public string Name => _jsonModel.Name;

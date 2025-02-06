@@ -6,10 +6,11 @@ public static class Mention
 {
     public static bool TryParseUser(ReadOnlySpan<char> mention, out ulong id)
     {
-        if (mention.StartsWith("<@") && mention.EndsWith(">"))
+        if (mention is ['<', '@', _, .., '>'])
         {
-            mention = mention[2..^1];
-            if (Snowflake.TryParse(mention.StartsWith("!") ? mention[1..] : mention, out id))
+            mention = mention[2] is '!' ? mention[3..^1] : mention[2..^1];
+
+            if (Snowflake.TryParse(mention, out id))
                 return true;
         }
         else
@@ -28,7 +29,7 @@ public static class Mention
 
     public static bool TryParseChannel(ReadOnlySpan<char> mention, out ulong id)
     {
-        if (mention.StartsWith("<#") && mention.EndsWith(">"))
+        if (mention is ['<', '#', .., '>'])
         {
             if (Snowflake.TryParse(mention[2..^1], out id))
                 return true;
@@ -49,7 +50,7 @@ public static class Mention
 
     public static bool TryParseRole(ReadOnlySpan<char> mention, out ulong id)
     {
-        if (mention.StartsWith("<@&") && mention.EndsWith(">"))
+        if (mention is ['<', '@', '&', .., '>'])
         {
             if (Snowflake.TryParse(mention[3..^1], out id))
                 return true;
@@ -70,7 +71,7 @@ public static class Mention
 
     public static bool TryParseSlashCommand(ReadOnlySpan<char> mention, [MaybeNullWhen(false)] out SlashCommandMention result)
     {
-        if (mention.StartsWith("</") && mention.EndsWith(">"))
+        if (mention is ['<', '/', .., '>'])
         {
             mention = mention[2..^1];
             int index = mention.IndexOf(':');
