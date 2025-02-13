@@ -26,6 +26,7 @@ public class GatewayClientConfiguration : IWebSocketClientConfiguration
     public Shard? Shard { get; init; }
     public RestClientConfiguration? RestClientConfiguration { get; init; }
     public ClientStateProperties? ClientState { get; init; }
-    public int Capabilities { get; init; } = 0;
+    public int Capabilities { get; init; }
+    public bool Compress { get; init; } = false;
     IRateLimiterProvider? IWebSocketClientConfiguration.RateLimiterProvider => RateLimiterProvider is { } rateLimiter ? rateLimiter : new GatewayRateLimiterProvider(120, 60_000);
 }

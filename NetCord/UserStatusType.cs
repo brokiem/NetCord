@@ -19,4 +19,7 @@ public enum UserStatusType : sbyte
 
     [JsonPropertyName("offline")]
     Offline,
+    
+    [JsonPropertyName("unknown")]
+    Unknown
 }

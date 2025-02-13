@@ -1,4 +1,5 @@
 ﻿using System.Net.WebSockets;
+using System.Text;
 
 namespace NetCord.Gateway.WebSockets;
 
@@ -33,6 +34,9 @@ internal sealed class WebSocketConnection : IWebSocketConnection
 
     public ValueTask SendAsync(ReadOnlyMemory<byte> buffer, WebSocketMessageType messageType, WebSocketMessageFlags messageFlags, CancellationToken cancellationToken = default)
     {
+        var message = Encoding.UTF8.GetString(buffer.Span);
+        Console.WriteLine($"[WS] Sending: {message}");
+        Console.WriteLine();
         return _webSocket.SendAsync(buffer, (System.Net.WebSockets.WebSocketMessageType)messageType, (System.Net.WebSockets.WebSocketMessageFlags)messageFlags, cancellationToken);
     }
 

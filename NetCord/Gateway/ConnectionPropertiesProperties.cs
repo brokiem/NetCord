@@ -76,7 +76,10 @@ public partial class ConnectionPropertiesProperties
     [JsonPropertyName("native_build_number")]
     public int? NativeBuildNumber { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("client_event_source")]
     public string? ClientEventSource { get; set; }
+    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("has_client_mods")]
+    public bool? HasClientMods { get; set; }
 }

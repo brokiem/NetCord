@@ -13,12 +13,11 @@ namespace NetCord.Gateway;
 /// </summary>
 public partial class GatewayClient : WebSocketClient, IEntity
 {
-    private readonly ConnectionPropertiesProperties? _connectionProperties;
-    private readonly int? _largeThreshold;
-    private readonly PresenceProperties? _presence;
-    private readonly GatewayIntents _intents;
-    private readonly ClientStateProperties _clientState;
     private readonly int? _capabilities;
+    private readonly ConnectionPropertiesProperties? _connectionProperties;
+    private readonly PresenceProperties? _presence;
+    private readonly bool _compress;
+    private readonly ClientStateProperties _clientState;
     private readonly IGatewayCompression _compression;
     private readonly bool _disposeRest;
 
@@ -833,12 +832,11 @@ public partial class GatewayClient : WebSocketClient, IEntity
         Token = token;
 
         Shard = configuration.Shard;
-        _connectionProperties = configuration.ConnectionProperties;
-        _largeThreshold = configuration.LargeThreshold;
-        _presence = configuration.Presence;
-        _intents = configuration.Intents.GetValueOrDefault(GatewayIntents.AllNonPrivileged);
-        _clientState = configuration.ClientState ?? ClientStateProperties.Default;
         _capabilities = configuration.Capabilities;
+        _connectionProperties = configuration.ConnectionProperties;
+        _presence = configuration.Presence;
+        _compress = configuration.Compress;
+        _clientState = configuration.ClientState ?? ClientStateProperties.Default;
         
         var compression = _compression = configuration.Compression ?? IGatewayCompression.CreateDefault();
         Uri = new($"wss://{configuration.Hostname ?? Discord.GatewayHostname}/?v={(int)configuration.Version.GetValueOrDefault(ApiVersion.V9)}&encoding=json&compress={compression.Name}", UriKind.Absolute);
@@ -855,13 +853,11 @@ public partial class GatewayClient : WebSocketClient, IEntity
     {
         var serializedPayload = new GatewayPayloadProperties<GatewayIdentifyProperties>(GatewayOpcode.Identify, new(Token.RawToken)
         {
+            Capabilities = _capabilities,
             ConnectionProperties = _connectionProperties,
-            LargeThreshold = _largeThreshold,
-            Shard = Shard,
             Presence = presence ?? _presence,
-            Intents = _intents,
+            Compress = _compress,
             ClientState = _clientState,
-            Capabilities = _capabilities
         }).Serialize(Serialization.Default.GatewayPayloadPropertiesGatewayIdentifyProperties);
         _latencyTimer.Start();
         return SendConnectionPayloadAsync(connectionState, serializedPayload, _internalPayloadProperties, cancellationToken);

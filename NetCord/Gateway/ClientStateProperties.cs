@@ -11,13 +11,7 @@ public partial class ClientStateProperties
 {
     public static ClientStateProperties Default => new()
     {
-        ApiCodeVersion = 0,
         GuildVersions = new GuildVersions(),
-        HighestLastMessageId = "0",
-        PrivateChannelsVersion = "0",
-        ReadStateVersion = 0,
-        UserGuildSettingsVersion = -1,
-        UserSettingsVersion = -1
     };
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
